@@ -1,0 +1,14 @@
+---
+title: "Tidyverse test project"
+author: "Emma Jane Sheard"
+date: "8 July 2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. 
