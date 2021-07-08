@@ -1,0 +1,136 @@
+---
+title: "Visualize Data"
+output: html_notebook
+---
+
+
+R Notebook showing work through example of how to visualise data.
+
+# First step: r setup
+
+Load in libraries and data. Check data is as expected.
+
+```{r setup}
+library(tidyverse)
+```
+
+```{r}
+mpg # fuel economy data for 38 models of car
+```
+
+```{r}
+head(mpg, n = 5) # notice that now we have only the top 5 ROWS showing
+```
+
+```{r}
+tail(mpg, n = 3) # now we have the end three rows only
+```
+
+```{r}
+str(mpg)
+```
+
+
+## Your Turn 1
+
+Run the code on the slide to make a graph. Pay strict attention to spelling, capitalization, and parentheses!
+
+What relationship do you expect to find between engine size (displ) and mileage (hwy)?
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+Trend in data shows that larger engine sizes have lower mileage.
+
+
+## Your Turn 2
+
+Add `color`, `size`, `alpha`, and `shape` aesthetics to your graph. Experiment. 
+
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, colour = class)) # colouring data points by the grouping of CLASS (e.g. what car they are - campervan, suv etc)
+```
+
+Although we see the general trend of decline in mileage with increasing engine size, but colouring the data points by car class we can see that SUV cars perform well for cars with a large engine size (outliers).
+
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), colour = "red") # when we want to colour ALL the points the same, we put colour OUTSIDE of the aes()
+```
+
+
+## Your Turn 3
+
+Replace this scatterplot with one that draws boxplots. Use the cheatsheet. Try your best guess.
+
+```{r}
+ggplot(mpg) + 
+  geom_boxplot(aes(class, hwy, fill = class)) # note that this time we use FILL instead of colour
+```
+
+
+## Your Turn 4
+
+Make a histogram of the `hwy` variable from `mpg`. Note that you don't need to specify x and y variable here. As this is a histogram the **y axis** is always going to be the **count** and the **x-axis** is always the **variable of interest.**
+
+```{r}
+ggplot(mpg) +
+  geom_histogram(aes(hwy), binwidth = 2) # you should always explore the binwidth values and use the one which best tells your story
+```
+
+
+## Your Turn 5
+
+Make a density plot of `hwy` colored by `class`.
+
+```{r}
+ggplot(mpg) +
+  geom_density(aes(hwy, colour = class))
+```
+
+## Your Turn 6
+
+Make a bar chart `hwy` colored by `class`.
+
+```{r}
+```
+
+## Your Turn 7
+
+Predict what this code will do. Then run it.
+
+```{r}
+ggplot(mpg) + 
+  geom_point(aes(displ, hwy)) +
+  geom_smooth(aes(displ, hwy))
+```
+
+## Your Turn 8
+
+What does `getwd()` return?
+
+```{r}
+```
+
+## Your Turn 9
+
+Save the last plot and then locate it in the files pane.
+
+```{r}
+```
+
+***
+
+# Take aways
+
+You can use this code template to make thousands of graphs with **ggplot2**.
+
+```{r eval = FALSE}
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
