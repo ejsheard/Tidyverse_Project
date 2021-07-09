@@ -98,6 +98,8 @@ ggplot(mpg) +
 Make a bar chart `hwy` colored by `class`.
 
 ```{r}
+ggplot(mpg) +
+  geom_bar(aes(hwy, fill = class))
 ```
 
 ## Your Turn 7
@@ -110,11 +112,22 @@ ggplot(mpg) +
   geom_smooth(aes(displ, hwy))
 ```
 
-## Your Turn 8
-
-What does `getwd()` return?
+Note this can also be written as the below if the mappings are the same for all levels (i.e. globally)
 
 ```{r}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point() +
+  geom_smooth()
+```
+
+
+## Your Turn 8
+
+What does `getwd()` return? 
+
+
+```{r}
+getwd()
 ```
 
 ## Your Turn 9
