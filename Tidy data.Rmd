@@ -44,7 +44,7 @@ The steps to follow in a workflow are:
 
 
 
-
+# R setup
 ```{r setup}
 ls() # can be used to clear R's memory of any prior stored objects 
 
@@ -88,6 +88,8 @@ head(cases) # four columns and 3 rows of data. Note that a tibble does not count
 # This data is MESSY as we do not have each variable in its own column. eg. country, year and value (i.e. count) are all variables so in a TIDY world there would be a seperate column for each of country, year and value.
 ```
 
+# Converting data from wide to long format using gather()
+
 ## Your Turn 1
 
 On a sheet of paper, draw how the cases data set would look if it had the same values grouped into three columns: **country**, **year**, **cases**
@@ -126,9 +128,16 @@ table4a %>%
   gather(key = "year", value = "cases", 2:3, convert = TRUE) # note that convert = TRUE changes year from a character value to an integer value
 ```
 
+# Converting data from long to wide format using spread()
+
 ## Your Turn 3
 
-On a sheet of paper, draw how this data set would look if it had the same values grouped into three columns: **city**, **large**, **small**
+On a sheet of paper, draw how the pollution data set would look if it had the same values grouped into three columns: **city**, **large**, **small**
+
+```{r}
+head(pollution)
+```
+
 
 ## Your Turn 4
 
@@ -140,11 +149,22 @@ table2
 
 
 ```{r}
-spread(table2, key = "type", value = "count")
+spread(table2, key = "type", value = "count", convert = TRUE)
 ```
-Now the column *type* (which consisted of cases and population) has been replaced with two columns of these names.
+
+Now the column *type* (which consisted of cases and population) has been replaced with two columns of these names, and the values in the *count* column are now in the new *cases* and *population* columns.
 
 
+Using pipe function this would be coded as:
+
+```{r}
+table2 %>%
+  spread(key = "type", value = "count", convert = TRUE)
+# where: Key = X is the column to use for keys (becomes the new column names); and value = X is the column to use for values (becomes new column cells)
+```
+
+
+# Dealing with untidy data using ()
 
 ## Your Turn 5
 
