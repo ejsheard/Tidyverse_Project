@@ -307,7 +307,7 @@ babynames %>%
    geom_line(aes(year, percent_female), colour = "red") +
     labs(
     title = "Percent of children born male/female",
-    subtitle = "(1880-2020)",
+    subtitle = "(1880-2015)",
     caption = "Data from babynames",
     tag = "Figure 1",
     x = "Year",
@@ -320,7 +320,9 @@ babynames %>%
 
 
 ```{r}
-# unique(as.factor(babynames$name)) # 97310 baby names!
+# unique(as.factor(babynames$name)) 
+# 97,310 baby names!
+# There are 1.8M rows of data!
 ```
 
 
