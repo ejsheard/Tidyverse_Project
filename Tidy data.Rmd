@@ -212,31 +212,129 @@ who %>%
 ```
 
 
-Sometimes we might want to combine the cells in two seperate columns (or more) into one column to create a code. Lets do this now by re-combining the sex and age to get the "sexage" column back.
+Sometimes we might want to combine the cells in two seperate columns (or more) into one column to create a single column code. We can do this using unite().
+
+Lets do this now by re-combining the sex and age to get the "sexage" column back.
 
 ```{r}
+neat.who <-
+  who %>% 
+ gather("codes", "n", 5:60) %>%
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>%
+   select(-iso2, -iso3, -new) %>%
+  separate(sexage, into = c("sex", "age"), sep = 1) %>%
+  drop_na(n)
 
+unite(neat.who, "SexAge", sex, age, sep = "_") # note that we put the name that we want the new column to be called in "", followed by the names of the columns we want to combine WITHOUT ""
 ```
 
 
 
 ## Your Turn 7
 
-Reshape the layout of this data. Calculate the percent of male (or female) children by year. Then plot the percent over time.
+**babynames** contains data of Number of children by year and gender
 
 ```{r}
-# original code
+head(babynames)
+```
+
+Can we calculate the ratio of boys to girls by year?
+
+First step summaries the number of males and females born by year:
+
+```{r}
 babynames %>%
   group_by(year, sex) %>% 
   summarise(n = sum(n))
-
-# my attempt
-babynames %>%
-  group_by(year, sex) %>%
-  summar
 ```
 
+Then use spread to convert long to wide by gender.
+
+```{r}
+babynames %>%
+ group_by(year, sex) %>%
+ summarise(n = sum(n)) %>%
+ spread(sex, n) # spread column "sex" into M and F columns and use the cell values from column "n"
+```
+
+
+From here, we can now calculate the percent of male  children by year by using **mutate()**. This preserves all the current columns and creates a new column, in this case called "percent_male", which uses the data from columns M and F to calculate the percentage.
+
+```{r}
+babynames %>%
+ group_by(year, sex) %>%
+ summarise(n = sum(n)) %>%
+ spread(sex, n) %>%
+  mutate(percent_male = M / (M + F) * 100)
+```
+
+Repeat but for percentage of females.
+
+```{r}
+babynames %>%
+ group_by(year, sex) %>%
+ summarise(n = sum(n)) %>%
+ spread(sex, n) %>%
+  mutate(percent_female = F / (M + F) * 100)
+```
+
+Lets now plot this as the percent over time for boys.
+
+```{r}
+babynames %>%
+ group_by(year, sex) %>%
+ summarise(n = sum(n)) %>%
+ spread(sex, n) %>%
+  mutate(percent_male = M / (M + F) * 100) %>%
+ ggplot(aes(year, percent_male)) + 
+  geom_line()
+```
+
+
+Lets make the graph a bit more fancy!
+
+Display both male and female, add labels and have a white background.
+
+```{r}
+babynames %>%
+ group_by(year, sex) %>%
+ summarise(n = sum(n)) %>%
+ spread(sex, n) %>%
+  mutate(percent_male = M / (M + F) * 100) %>%
+  mutate(percent_female = F / (M + F) * 100) %>%
+ ggplot(aes(year, percent_male)) + 
+  geom_line(aes(year, percent_male), colour = "blue") +
+   geom_line(aes(year, percent_female), colour = "red") +
+    labs(
+    title = "Percent of children born male/female",
+    subtitle = "(1880-2020)",
+    caption = "Data from babynames",
+    tag = "Figure 1",
+    x = "Year",
+    y = "Percentage (%)",
+    colour = "Sex"
+  ) +
+  ylim(0, 100) +
+  theme_classic() # note this is a good format for presentations
+```
+
+
+```{r}
+# unique(as.factor(babynames$name)) # 97310 baby names!
+```
+
+
 ***
+
+# Recap
+
+Move values into column names with spread() - image smearing the column across the screen!
+
+Move column names into values with gather() - imagine pulling the columns down
+
+Split a column with separate()
+
+Unite columns with unite()
 
 # Take Aways
 
