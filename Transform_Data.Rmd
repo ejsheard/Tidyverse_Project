@@ -7,6 +7,9 @@ output: html_notebook
 
 This work through builds on from **Tidy Data**. Here we explore more of babynames e.g. make plots by names of babies rather than just by gender.
 
+Babynames is data on: The names of male and female babies born
+in the US from 1880 to 2015. There are 1.8M rows of data!
+
 
 ```{r setup}
 library(tidyverse)
@@ -45,7 +48,7 @@ instrument2 <- tribble(
 ## babynames
 
 ```{r}
-babynames
+head(babynames)
 ```
 
 
