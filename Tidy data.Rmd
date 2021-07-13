@@ -164,21 +164,61 @@ table2 %>%
 ```
 
 
-# Dealing with untidy data using ()
+# Longer example: Dealing with untidy data using pipe function and both gather() and spread() to pick apart a messy code string used in the data input
 
 ## Your Turn 5
 
-Gather the 5th through 60th columns of `who` into a key column: value column pair named **codes** and **n**. Then select just the `county`, `year`, `codes` and `n` variables.
+The *who* dataset is very messy... the names of column 5 to 60 are a string of information about TB cases, where for example: sp = pulmonary TB, smear positive; sn = pulmonary TB, smear negative etc. The character after this represents if the individual is male (m) or female (f). A code follows this which represents their age where 014 = age group 0 to 14 years; 1524 = age group 15 to 24 years etc.
 
 ```{r}
+head(who)
+```
+
+This information would be simpler to analyse if it were in the long format with the information held in the column code as a single column.
+
+Here we: Gather the 5th through 60th columns of `who` into a key column: value column pair named **codes** and **n**. Then select just the `county`, `year`, `codes` and `n` variables.
+
+```{r}
+who %>% # the data we want to manipulate
+ gather("codes", "n", 5:60) %>% # use gather function. Specify the new name of the single column we want with the who codes in it as "code", and specify the name of the column we want which will hold the cell values, and then specify the columns that we want to manipulate
+ select(-iso2, -iso3) # this removes columns iso2 and iso3 to give us the "neater" dataset
 ```
 
 ## Your Turn 6
 
-Separate the `sexage` column into **sex** and **age** columns.
+We can now Separate the *codes* column into the individual pieces of information that we want. e.g. seperate out the information in the code about sex and age into seperate column of **sex** and **age**.
+
+We do this using seperate() specifying that we need to split the *codes* column into three new columns called "new", "type", "sexage". We can do this using the underscore "_" to identify the seperate parts of the code. 
+
+Note that there are 3 parts to the code: "new", "type of TB such as "sp"", and the "sex & age". In this case we shall call the sex & age group "sexage" for now as they are not seperated by a "_"
 
 ```{r}
+who %>% 
+ gather("codes", "n", 5:60) %>% 
+ select(-iso2, -iso3) %>% 
+separate(codes, into = c("new", "type", "sexage"), sep = "_") %>%
+ select(-new) # this removes the "new" column which does not hold any data of interest for us in this example
 ```
+
+We can now split the column *sexage* into sex and age by specify the number of *characters* to split by. In this case, we want it to split after ONE character (the m/f character) and put the remaining into a seperate age column.
+
+```{r}
+who %>% 
+ gather("codes", "n", 5:60) %>%
+  separate(codes, into = c("new", "type", "sexage"), sep = "_") %>%
+   select(-iso2, -iso3, -new) %>% # to reduce length of code can select all the columns to remove in one go here
+  separate(sexage, into = c("sex", "age"), sep = 1) %>%
+  drop_na(n) # we can use drop_na to remove na's from the data if desired
+```
+
+
+Sometimes we might want to combine the cells in two seperate columns (or more) into one column to create a code. Lets do this now by re-combining the sex and age to get the "sexage" column back.
+
+```{r}
+
+```
+
+
 
 ## Your Turn 7
 
