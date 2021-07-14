@@ -79,7 +79,18 @@ select(babynames, -c(year, sex, prop)) # yes - this would work. The -c() REMOVES
 select(babynames, name:n) # yes - this would work. Names the columns we want to select from column "name"" through to column "n"
 select(babynames, starts_with("n")) # yes - this would work as both columns "name" and "n" begin with the character "n"
 select(babynames, ends_with("n")) # no - this would just get column "n"
+select(babynames, contains("n")) # yes - only columns "name" and "n" contain the character "n"
 ```
+
+Other useful things you can do with the select() function to extract the columns of interest are:
+
+**matches()** - Select columns whose names match a regular expression. Note that regular expresssion should be in " ". In this example **select(data, matches("^.{4}$"))** would mean select columns which match with the regular expression of the same four characters. See here for more information on how regular expressions work! **This is a super useful topic https://regex101.com/ **
+
+**one_of()** - Select columns whose names are one of a set for example **select(storms, one_of(c("storm", "storms", "Storm"))**
+
+**num_range()** - Select columns named in prefix, number style for example **select(storms, num_range("x", 1:5))**
+
+
 
 ## Your Turn 2
 
@@ -89,13 +100,58 @@ Show:
 * All of the children named "Sea"  
 * All of the names that have a missing value for `n`  
 
-To do this we need to use **filter()**
+To do this we need to use **filter()** which gives us the rows or interest. **NB:** select() gives us the columns of interet.
 
 ```{r}
-filter(babynames, is.na(n))
+filter(babynames, prop >= 0.08) # prop column values greater than or equal to 0.08
 
+filter(babynames, name == "Sea") # name column which are called "Sea"
+
+filter(babynames, is.na(n)) # there are no "na" values in column n
+
+# an alternative approach would be to use subset()
+subset(babynames, prop >= 0.08)
 
 ```
+
+Useful terms:
+
+**x < y** Less than
+
+**x > y** Greater than
+
+**x == y** Equal to
+
+**x <= y** Less than or equal to
+
+**x >= y** Greater than or equal to
+
+**x != y** Not equal to
+
+**x %in% y** Group membership e.g. group of names
+
+**is.na(x)** Is NA
+
+**!is.na(x)** Is not NA
+
+```{r}
+filter(babynames, name %in% c("Ben", "Alice", "Sarah"))
+```
+
+
+Note that you can also use multiple arguements with filter() such as name and year
+
+```{r}
+filter(babynames, name == "Emma", year == 1987)
+```
+
+Boolean operators enable us to specify multiple arguements in filter with more precision, such as using "and" and "or". Where:
+
+**a & b** = and
+**a | b** = or
+**xor(a,b)** = "exclusive or". It is a logical operation that is true if and only if its arguments differ (one is true, the other is false). e.g. Returns true if a but not b; or if b but not a. Returns false if not a and not b; returns false if a and b. 
+**!a** = not
+
 
 ## Your Turn 3
 
@@ -106,8 +162,13 @@ Use Boolean operators to alter the code below to return only the rows that conta
 * Names that are one of Acura, Lexus, or Yugo
 
 ```{r}
-filter(babynames, name == "Sea" | name == "Anemone")
+filter(babynames, name == "Sea" & sex == "F") # females with name Sea
+
+filter(babynames, n == 5 | n == 6 & year == 1880) # n is 5 or 6 and year is 1880
+
+filter(babynames, name %in% c("Acura", "Lexus", "Yugo"))
 ```
+
 
 ## Your Turn 4
 
