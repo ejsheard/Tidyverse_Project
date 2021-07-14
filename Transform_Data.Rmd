@@ -48,16 +48,26 @@ instrument2 <- tribble(
 ## babynames
 
 ```{r}
-head(babynames)
+head(babynames, n = 3)
 ```
 
 
 ## Your Turn 1
 
-Alter the code to select just the `n` column:
+You can isolate data by using:
+
+**select()** - extract variables
+
+**filter()** - extract cases
+
+**arrange()** - reorder cases
+
+
+Use select() to get just the `n` column:
 
 ```{r}
-select(babynames, name, prop)
+# select(babynames, name, n) # gives us names and n column
+select(babynames, n) # this is just column n
 ```
 
 ## Quiz
@@ -65,10 +75,10 @@ select(babynames, name, prop)
 Which of these is NOT a way to select the `name` and `n` columns together?
 
 ```{r}
-select(babynames, -c(year, sex, prop))
-select(babynames, name:n)
-select(babynames, starts_with("n"))
-select(babynames, ends_with("n"))
+select(babynames, -c(year, sex, prop)) # yes - this would work. The -c() REMOVES the columns specified
+select(babynames, name:n) # yes - this would work. Names the columns we want to select from column "name"" through to column "n"
+select(babynames, starts_with("n")) # yes - this would work as both columns "name" and "n" begin with the character "n"
+select(babynames, ends_with("n")) # no - this would just get column "n"
 ```
 
 ## Your Turn 2
@@ -79,8 +89,12 @@ Show:
 * All of the children named "Sea"  
 * All of the names that have a missing value for `n`  
 
+To do this we need to use **filter()**
+
 ```{r}
 filter(babynames, is.na(n))
+
+
 ```
 
 ## Your Turn 3
