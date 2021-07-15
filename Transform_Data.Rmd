@@ -63,7 +63,7 @@ You can isolate data by using:
 **arrange()** - reorder cases
 
 
-Use select() to get just the `n` column:
+Use `select()` to get just the `n` column:
 
 ```{r}
 # select(babynames, name, n) # gives us names and n column
@@ -82,7 +82,7 @@ select(babynames, ends_with("n")) # no - this would just get column "n"
 select(babynames, contains("n")) # yes - only columns "name" and "n" contain the character "n"
 ```
 
-Other useful things you can do with the select() function to extract the columns of interest are:
+Other useful things you can do with the `select()` function to extract the columns of interest are:
 
 **matches()** - Select columns whose names match a regular expression. Note that regular expresssion should be in " ". In this example **select(data, matches("^.{4}$"))** would mean select columns which match with the regular expression of the same four characters. See here for more information on how regular expressions work! **This is a super useful topic https://regex101.com/ **
 
@@ -100,7 +100,7 @@ Show:
 * All of the children named "Sea"  
 * All of the names that have a missing value for `n`  
 
-To do this we need to use **filter()** which gives us the rows or interest. **NB:** select() gives us the columns of interet.
+To do this we need to use **filter()** which gives us the rows or interest. **NB:** `select()` gives us the columns of interet.
 
 ```{r}
 filter(babynames, prop >= 0.08) # prop column values greater than or equal to 0.08
@@ -139,7 +139,7 @@ filter(babynames, name %in% c("Ben", "Alice", "Sarah"))
 ```
 
 
-Note that you can also use multiple arguements with filter() such as name and year
+Note that you can also use multiple arguements with `filter()` such as name and year
 
 ```{r}
 filter(babynames, name == "Emma", year == 1987)
@@ -148,8 +148,11 @@ filter(babynames, name == "Emma", year == 1987)
 Boolean operators enable us to specify multiple arguements in filter with more precision, such as using "and" and "or". Where:
 
 **a & b** = and
+
 **a | b** = or
+
 **xor(a,b)** = "exclusive or". It is a logical operation that is true if and only if its arguments differ (one is true, the other is false). e.g. Returns true if a but not b; or if b but not a. Returns false if not a and not b; returns false if a and b. 
+
 **!a** = not
 
 
@@ -169,20 +172,46 @@ filter(babynames, n == 5 | n == 6 & year == 1880) # n is 5 or 6 and year is 1880
 filter(babynames, name %in% c("Acura", "Lexus", "Yugo"))
 ```
 
+Using `subset()` instead of filter can give similar results. Here we want to subset (or filter) our data to give female names with more than 25 records. Additionally we have selected to show only the year and name columns.
+```{r}
+# using subset() and select()
+subset(babynames, sex=="F" & n > 25,
+select=c(year, name))
+
+# using filter(), select() and pipe function
+babynames %>%
+  filter(sex == "F" & n > 25) %>%
+  select(c(year, name))
+```
+
 
 ## Your Turn 4
 
-Arrange babynames by `n`. Add `prop` as a second (tie breaking) variable to arrange on. Can you tell what the smallest value of `n` is?
+You can manipulate data further using **arrange()** for example to: Order rows from smallest to largest values.
+
+Arrange babynames by `n`. Add `year` as a second (tie breaking) variable to arrange on. Can you tell what the smallest value of `n` is?
 
 ```{r}
+babynames %>%
+  arrange(n) # arranges data by column n from smalles to largest
+
+babynames %>%
+  arrange(n, year) # as above, but also does this with the year column too
 ```
 
 ## Your Turn 5
+
+You can alter the way that `arrange()` works by specifying as argument to the column of interest such as **desc()** for **DESCENDING** order (largest to smallest). By default, `arrange()` orders from smallest to largest.
 
 Use `desc()` to find the names with the highest prop.
 Then, use `desc()` to find the names with the highest n.
 
 ```{r}
+babynames %>%
+  arrange(desc(prop))
+
+# both ways of coding give the same results BUT the "tidy" was above looks neater.
+arrange(babynames, desc(prop))
 ```
 
 ## Your Turn 6
@@ -194,7 +223,19 @@ Use `%>%` to write a sequence of functions that:
 3. Arrange the results so that the most popular names are near the top.
 
 ```{r}
+babynames %>% # data we want to work with
+  filter(sex == "F" & year == 2015) %>% # filter by variable(s) of interest
+  select(c(name, n)) %>% # select column(s) of interest
+  arrange(desc(n)) # arrange in descending order by column of interest
 ```
+
+**NOTE!** You can use the short cut `Ctrl`+`shift`+`m` to give you the pipe function
+```{r}
+%>% 
+```
+
+Note that if this was a mac would have to code using `Cmd`+`shift`+`m`
+
 
 ## Exam
 
@@ -203,17 +244,27 @@ Use `%>%` to write a sequence of functions that:
 3. Plot the results as a line graph with `year` on the x axis and `prop` on the y axis
 
 ```{r}
+babynames %>% 
+  filter(name == "Emma", sex == "F") %>% 
+  select(year, prop) %>% 
+  ggplot(aes(x = year, y = prop)) +
+  geom_line(colour = "purple") +
+  theme_classic()
 ```
 
 ## Your Turn 7
 
-Use summarise() to compute three statistics about the data:
+Use `summarise()` to compute three statistics about the data:
 
 1. The first (minimum) year in the dataset  
 2. The last (maximum) year in the dataset  
 3. The total number of children represented in the data
 
 ```{r}
+babynames %>% 
+  summarise(year_min = min(year),
+            year_max = max(year),
+            Tchildren = sum(n))
 ```
 
 ## Your Turn 8
@@ -224,11 +275,51 @@ Extract the rows where `name == "Khaleesi"`. Then use `summarise()` and a summar
 2. The first year Khaleesi appeared in the data
 
 ```{r}
+babynames %>% 
+  filter(name == "Khaleesi") %>% 
+  summarise(Tchildren = sum(n),
+            year_min = min(year),
+            year_max = max(year))
 ```
 
 ## Your Turn 9
 
+A name is popular if:
+1. Sums - a large number of children have the name when you sum across years 
+2. Ranks - it consistently ranks among the top names from year to year.
+
+
+Below calculate the total and maximum:
+```{r}
+babynames %>% 
+  summarise(total = sum(n), # the TOTAL number of children in the data
+            max = max(n)) # the cell with the highest number of children in one year
+
+babynames %>% 
+  filter(n == 99686) # therefor the most popular name in the data was Linda in 1947
+
+babynames %>% 
+   group_by(sex) %>% 
+  summarise(total = sum(n), 
+            max = max(n))
+
+babynames %>% 
+  filter(n == c(99686, 94756)) # Linda and James
+```
+
+
+We can calculate the most popular names from `babynames` using:
+
+**summarise()** - summarise variables
+
+**group_by()** - group cases
+
+**mutate()** - create new variables
+
+
+
 Use `group_by()`, `summarise()`, and `arrange()` to display the ten most popular names. Compute popularity as the total number of children of a single gender given a name.
+
 
 ```{r}
 ```
